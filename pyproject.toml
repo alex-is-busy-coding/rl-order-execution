@@ -1,0 +1,9 @@
+[project]
+name = "rl-order-execution"
+version = "0.1.0"
+description = "Deep Reinforcement Learning for Optimal Trade Execution"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv]
+dev-dependencies = []
