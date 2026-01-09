@@ -5,7 +5,7 @@ import torch.optim as optim
 import random
 import logging
 from collections import deque
-from typing import Tuple, Deque, cast
+from typing import Tuple, Deque, Optional, cast
 from gymnasium import spaces
 
 from rl_order_execution.settings import Settings
@@ -112,9 +112,9 @@ class DQNAgent:
             q_values = self.policy_net(state_t)
             return int(q_values.argmax().item())
 
-    def train_step(self) -> None:
+    def train_step(self) -> Optional[float]:
         if len(self.memory) < self.settings.rl.batch_size:
-            return
+            return None
 
         states, actions, rewards, next_states, dones = self.memory.sample(
             self.settings.rl.batch_size
@@ -132,8 +132,7 @@ class DQNAgent:
         loss.backward()
         self.optimizer.step()
 
-        if len(self.memory) % 1000 == 0:
-            logger.debug(f"Training Loss: {loss.item():.4f}")
+        return float(loss.item())
 
     def update_epsilon(self) -> None:
         self.epsilon = max(
