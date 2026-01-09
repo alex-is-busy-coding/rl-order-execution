@@ -1,0 +1,24 @@
+simulation:
+  seed: 42
+  total_shares: 1000
+  time_horizon: 50
+  start_price: 100.0
+  volatility: 0.002
+  drift: 0.0
+  liquidity_param: 0.01
+  temp_impact_param: 0.05
+  action_multipliers: [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0]
+
+rl:
+  gamma: 0.99
+  batch_size: 64
+  lr: 0.001
+  epsilon_start: 1.0
+  epsilon_end: 0.01
+  epsilon_decay: 0.995
+  target_update: 10
+  memory_size: 10000
+  episodes: 2000
+
+logging:
+  log_level: "INFO"
