@@ -24,6 +24,7 @@ venv/
 # Project Specific Outputs (Generated plots and logs)
 execution_analysis.png
 *.log
+runs/
 
 # OS generated files
 .DS_Store
