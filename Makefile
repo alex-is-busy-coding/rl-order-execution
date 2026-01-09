@@ -43,6 +43,7 @@ clean:
 	rm -rf .venv
 	rm -rf __pycache__
 	rm -f execution_analysis.png
+	rm -rf runs
 
 help:
 	@echo "Available commands:"
