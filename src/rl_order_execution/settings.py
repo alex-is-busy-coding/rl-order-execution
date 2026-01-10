@@ -23,7 +23,7 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
 
     def __call__(self) -> Dict[str, Any]:
         try:
-            with open("config.yaml", "r") as f:
+            with open("config/config.yaml", "r") as f:
                 data = yaml.safe_load(f)
             return data if isinstance(data, dict) else {}
         except FileNotFoundError:
@@ -95,7 +95,15 @@ class RLSettings(BaseModel):
 class LoggingSettings(BaseModel):
     """Settings for application logging."""
 
-    log_level: Annotated[str, Field(description="Logging verbosity level.")] = "INFO"
+    log_level: Annotated[
+        str,
+        Field(
+            description="Logging verbosity level.",
+            json_schema_extra={
+                "possible_values": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+            },
+        ),
+    ] = "INFO"
 
     @field_validator("log_level")
     @classmethod
