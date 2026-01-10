@@ -82,19 +82,19 @@ We use `make` to standardize development tasks and ensure code quality.
 
 | Command           | Description |
 | ----------------- | ----------- |
-| make run          | Run the simulation
-| make tensorboard  | Launch TensorBoard server
-| make check        | *Recommended.* Run all quality checks (lint + type-check + test)
-| make test         | Run unit tests
-| make lint         | Check code style
-| make type-check   | Run static type checking with mypy
-| make format       | Auto-format code
-| make docs         | Locally update README config table
-| make install      | Install base dependencies
-| make install-dev  | Install all dev dependencies
-| make docker-build | Build the Docker image
-| make docker-run   | Run the Docker container
-| make clean        | Remove virtualenv, caches, and plots
+| `make run`          | Run the simulation
+| `make tensorboard`  | Launch TensorBoard server
+| `make check`        | *Recommended.* Run all quality checks (lint + type-check + test)
+| `make test`        | Run unit tests
+| `make lint`         | Check code style
+| `make type-check`   | Run static type checking with mypy
+| `make format`       | Auto-format code
+| `make docs`         | Locally update README config table
+| `make install`      | Install base dependencies
+| `make install-dev`  | Install all dev dependencies
+| `make docker-build` | Build the Docker image
+| `make docker-run`   | Run the Docker container
+| `make clean`        | Remove virtualenv, caches, and plots
 
 Run `make help` in your terminal to see the full list of available commands.
 
