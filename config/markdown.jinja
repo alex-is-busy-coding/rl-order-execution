@@ -1,0 +1,126 @@
+{#
+    The `--heading-offset` command line parameter is exposed as `heading_offset` variable.
+    See https://github.com/samuelcolvin/pydantic/blob/master/pydantic/fields.py for field structure.
+#}
+
+{%- set sorted_fields = fields|list|sort -%}
+
+{%- for env_name, field in sorted_fields -%}
+    
+    {%- if "__" in env_name -%}
+        {%- set section_parts = env_name.split("__")[0].split("_") -%}
+        {%- if section_parts|length > 1 -%}
+            {%- set current_section = section_parts[1] -%}
+        {%- else -%}
+            {%- set current_section = section_parts[0] -%}
+        {%- endif -%}
+    {%- else -%}
+        {%- set current_section = "General" -%}
+    {%- endif -%}
+
+    {%- set prev_section = "" -%}
+    {%- if not loop.first -%}
+        {%- set prev_name = loop.previtem[0] -%}
+        {%- if "__" in prev_name -%}
+            {%- set prev_parts = prev_name.split("__")[0].split("_") -%}
+            {%- if prev_parts|length > 1 -%}
+                {%- set prev_section = prev_parts[1] -%}
+            {%- else -%}
+                {%- set prev_section = prev_parts[0] -%}
+            {%- endif -%}
+        {%- else -%}
+            {%- set prev_section = "General" -%}
+        {%- endif -%}
+    {%- endif -%}
+
+    {%- set description_text = field.description|default("", true)|replace("\n", "<br>") -%}
+
+    {%- set examples_text = "" -%}
+    {%- if field.json_schema_extra and "examples" in field.json_schema_extra -%}
+        {%- set examples_values = field.json_schema_extra.examples -%}
+        {%- if examples_values is string -%}
+            {%- set examples_text = examples_values -%}
+        {%- elif not is_values_with_descriptions(examples_values) -%}
+            {%- if examples_values|join("`, `")|length + 2 <= 75 -%}
+                {%- set examples_text = "`" + examples_values|join("`, `") + "`" -%}
+            {%- else -%}
+                {%- set examples_list = [] -%}
+                {%- for value in examples_values -%}
+                    {%- set _ = examples_list.append("- `" + value|string + "`") -%}
+                {%- endfor -%}
+                {%- set examples_text = examples_list|join("<br>") -%}
+            {%- endif -%}
+        {%- else -%}
+            {%- set examples_list = [] -%}
+            {%- for value in examples_values -%}
+                {%- if value.__class__.__name__ == "list" and value|length <= 2 -%}
+                    {%- if value|length == 2 -%}
+                        {%- set _ = examples_list.append("- `" + value[0]|string + "`: " + value[1]|string) -%}
+                    {%- else -%}
+                        {%- set _ = examples_list.append("- `" + value[0]|string + "`") -%}
+                    {%- endif -%}
+                {%- else -%}
+                    {%- set _ = examples_list.append("- `" + value|string + "`") -%}
+                {%- endif -%}
+            {%- endfor -%}
+            {%- set examples_text = examples_list|join("<br>") -%}
+        {%- endif -%}
+    {%- elif field.examples -%}
+        {%- if field.examples|join("`, `")|length + 2 <= 75 -%}
+            {%- set examples_text = "`" + field.examples|join("`, `") + "`" -%}
+        {%- else -%}
+            {%- set examples_list = [] -%}
+            {%- for value in field.examples -%}
+                {%- set _ = examples_list.append("- `" + value|string + "`") -%}
+            {%- endfor -%}
+            {%- set examples_text = examples_list|join("<br>") -%}
+        {%- endif -%}
+    {%- endif -%}
+
+    {%- set possible_values_text = "" -%}
+    {%- if field.json_schema_extra and "possible_values" in field.json_schema_extra -%}
+        {%- set possible_values = field.json_schema_extra.possible_values -%}
+    {%- elif is_typing_literal(field) -%}
+        {%- set possible_values = field.annotation.__args__ -%}
+    {%- elif is_enum(field) -%}
+        {%- set possible_values = field.annotation.__members__.values() | map(attribute='value') | list -%}
+    {%- endif -%}
+
+    {%- if possible_values -%}
+        {%- if not is_values_with_descriptions(possible_values) -%}
+            {%- if possible_values|join("`, `")|length + 2 <= 75 -%}
+                {%- set possible_values_text = "`" + possible_values|join("`, `") + "`" -%}
+            {%- else -%}
+                {%- set pv_list = [] -%}
+                {%- for value in possible_values -%}
+                    {%- set _ = pv_list.append("- `" + value|string + "`") -%}
+                {%- endfor -%}
+                {%- set possible_values_text = pv_list|join("<br>") -%}
+            {%- endif -%}
+        {%- else -%}
+            {%- set pv_list = [] -%}
+            {%- for value in possible_values -%}
+                {%- if value.__class__.__name__ == "list" and value|length <= 2 -%}
+                    {%- if value|length == 2 -%}
+                        {%- set _ = pv_list.append("- `" + value[0]|string + "`: " + value[1]|string) -%}
+                    {%- else -%}
+                        {%- set _ = pv_list.append("- `" + value[0]|string + "`") -%}
+                    {%- endif -%}
+                {%- else -%}
+                    {%- set _ = pv_list.append("- `" + value|string + "`") -%}
+                {%- endif -%}
+            {%- endfor -%}
+            {%- set possible_values_text = pv_list|join("<br>") -%}
+        {%- endif -%}
+    {%- endif -%}
+    
+    {%- if loop.first or current_section != prev_section -%}
+        {%- if not loop.first -%}{{ "\n" }}{%- endif -%}
+### `{{ current_section }}` settings
+{{ "\n" }}
+| Name | Required | Default | Description |
+| :--- | :---: | :--- | :--- |{{ "\n" }}
+    {%- endif -%}
+
+| `{{ env_name|upper }}` | {% if field.is_required() %}**Yes**{% else %}No{% endif %} | {% if has_default_value(field) %}`{{ fix_str_enum_value(field.default) }}`{% else %}-{% endif %} | {{ description_text }}{% if examples_text %}<br><br>**Examples:**<br>{{ examples_text }}{% endif %}{% if possible_values_text %}<br><br>**Possible values:**<br>{{ possible_values_text }}{% endif %} |{{ "\n" }}
+{%- endfor -%}
