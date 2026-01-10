@@ -1,4 +1,4 @@
-.PHONY: all run clean help
+.PHONY: all run tensorboard test lint format type-check check clean help install install-dev docker-build docker-run docs
 
 all: run
 
@@ -45,6 +45,26 @@ clean:
 	rm -f execution_analysis.png
 	rm -rf runs
 
+docker-build:
+	@echo "Building Docker image..."
+	docker build -t rl-order-execution .
+
+docker-run:
+	@echo "Running Docker container..."
+	# Mounts current directory to /app/output to persist plots
+	docker run --rm -v "$(shell pwd):/app/output" rl-order-execution
+
+docs:
+	@echo "Updating README configuration table..."
+	uv run settings-doc generate \
+		--class rl_order_execution.settings.Settings \
+		--templates config \
+		--output-format markdown \
+		--between "<!-- settings-start -->" "<!-- settings-end -->" \
+		--update README.md \
+		--heading-offset 2
+	@echo "README.md updated."
+
 help:
 	@echo "Available commands:"
 	@echo "  make run          - Run the simulation"
@@ -54,6 +74,9 @@ help:
 	@echo "  make lint         - Check code style"
 	@echo "  make type-check   - Run static type checking with mypy"
 	@echo "  make format       - Auto-format code"
+	@echo "  make docs         - Locally update README config table"
 	@echo "  make install      - Install base dependencies"
 	@echo "  make install-dev  - Install all dev dependencies"
+	@echo "  make docker-build - Build the Docker image"
+	@echo "  make docker-run   - Run the Docker container"
 	@echo "  make clean        - Remove virtualenv, caches, and plots"
