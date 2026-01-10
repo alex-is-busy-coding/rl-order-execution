@@ -57,10 +57,10 @@ To run the simulation in a completely isolated environment:
 ```
 rl-order-execution/
 ├── .github/workflows/
-│   ├── ci.yml           # CI pipeline (Lint, Test, Type-Check)
-│   └── update-docs.yml  # Auto-update README config table
+│   ├── ci.yml               # CI pipeline (Lint, Test, Type-Check)
+│   └── update-docs.yml      # Auto-update README config table
 ├── config/
-│   └── config.yaml      # Runtime configuration parameters
+│   └── config.yaml          # Runtime configuration parameters
 ├── src/
 │   └── rl_order_execution/
 │       ├── agent.py         # DQN Agent & ReplayBuffer implementation
@@ -68,12 +68,12 @@ rl-order-execution/
 │       ├── environment.py   # Custom Gymnasium Market Environment
 │       ├── evaluation.py    # TWAP comparison & plotting logic
 │       └── training.py      # Core training loop with TensorBoard
-├── tests/               # Pytest suite
-├── Dockerfile           # Container definition
-├── Makefile             # Automation commands
-├── pyproject.toml       # Dependencies (uv)
-├── README.md            # Documentation
-└── main.py              # Application entry point
+├── tests/                   # Pytest suite
+├── Dockerfile               # Container definition
+├── Makefile                 # Automation commands
+├── pyproject.toml           # Dependencies (uv)
+├── README.md                # Documentation
+└── main.py                  # Application entry point
 ```
 
 ## Development Workflow
