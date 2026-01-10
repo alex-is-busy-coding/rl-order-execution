@@ -19,6 +19,7 @@ dev = [
     "mypy>=1.19.1",
     "pytest>=9.0.2",
     "ruff>=0.14.11",
+    "settings-doc>=4.3.2",
     "types-pyyaml>=6.0.12.20250915",
 ]
 
