@@ -20,5 +20,15 @@ rl:
   memory_size: 10000
   episodes: 2000
 
+optimization:
+  study_name: "rl_order_execution_v1"
+  lr_min: 0.00001
+  lr_max: 0.01
+  batch_sizes: [32, 64, 128]
+  gamma_min: 0.90
+  gamma_max: 0.9999
+  n_trials: 20
+  tuning_episodes: 500
+
 logging:
   log_level: "INFO"
