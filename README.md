@@ -36,6 +36,28 @@ make tensorboard
 
 Open http://localhost:6006 to view the metrics.
 
+### Hyperparameter Tuning (Optuna)
+
+We use [Optuna](https://optuna.org/) to automatically find the best hyperparameters (Learning Rate, Batch Size, Gamma).
+
+Run the Optimizer:
+
+```bash
+make optimize
+```
+
+#### Key Features:
+
+1. **Optimization:** Runs trials (TPE algorithm) to maximize the agent's improvement over TWAP.
+
+2. **Early Pruning:** Uses a `MedianPruner` to terminate bad trials early (checked every 50 episodes), saving compute.
+
+3. **Persistence:** Studies are saved to a local SQLite database (`db/optuna_study.db`), allowing you to pause and resume optimization.
+
+4. **Configuration:** Search ranges and trial counts are defined in `config/config`.yaml under the optimization section.
+
+5. **Auto-Deployment:** The best parameters are saved to `config/best_params.yaml`. Subsequent make run calls automatically prioritize these values.
+
 ### Docker Support
 
 To run the simulation in a completely isolated environment:
@@ -67,6 +89,7 @@ rl-order-execution/
 │       ├── settings.py      # Pydantic configuration & validation
 │       ├── environment.py   # Custom Gymnasium Market Environment
 │       ├── evaluation.py    # TWAP comparison & plotting logic
+│       ├── optimize.py      # Optuna hyperparameter tuning script
 │       └── training.py      # Core training loop with TensorBoard
 ├── tests/                   # Pytest suite
 ├── Dockerfile               # Container definition
@@ -80,12 +103,13 @@ rl-order-execution/
 
 We use `make` to standardize development tasks and ensure code quality. 
 
-| Command           | Description |
-| ----------------- | ----------- |
+| Command             | Description |
+| ------------------- | ----------- |
 | `make run`          | Run the simulation
+| `make optimize`     | Run Optuna hyperparameter tuning
 | `make tensorboard`  | Launch TensorBoard server
 | `make check`        | *Recommended.* Run all quality checks (lint + type-check + test)
-| `make test`        | Run unit tests
+| `make test`         | Run unit tests
 | `make lint`         | Check code style
 | `make type-check`   | Run static type checking with mypy
 | `make format`       | Auto-format code
