@@ -1,7 +1,8 @@
 import time
 import numpy as np
 import logging
-from typing import List
+import optuna
+from typing import List, Optional
 from torch.utils.tensorboard import SummaryWriter
 
 from rl_order_execution.settings import get_settings
@@ -11,7 +12,11 @@ from rl_order_execution.agent import DQNAgent
 logger = logging.getLogger(__name__)
 
 
-def train_agent(env: OrderExecutionEnv, agent: DQNAgent) -> List[float]:
+def train_agent(
+    env: OrderExecutionEnv,
+    agent: DQNAgent,
+    optuna_trial: Optional[optuna.Trial] = None,
+) -> List[float]:
     """
     Executes the training loop for the Deep Q-Network agent.
     """
@@ -68,6 +73,16 @@ def train_agent(env: OrderExecutionEnv, agent: DQNAgent) -> List[float]:
             logger.info(
                 f"Episode {episode + 1:03d} | Avg Reward: {avg_rew:.2f} | Epsilon: {agent.epsilon:.2f}"
             )
+
+            if optuna_trial:
+                optuna_trial.report(float(avg_rew), step=episode)
+
+                if optuna_trial.should_prune():
+                    logger.info(
+                        f"Trial {optuna_trial.number} pruned at episode {episode + 1}"
+                    )
+                    writer.close()
+                    raise optuna.TrialPruned()
 
     logger.info(f"Training finished in {time.time() - start_time:.1f}s")
     writer.close()
