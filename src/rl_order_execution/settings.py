@@ -30,6 +30,27 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
             return {}
 
 
+class YamlFileSource(PydanticBaseSettingsSource):
+    """
+    A custom settings source that loads configuration from a specific YAML file.
+    """
+
+    def __init__(self, settings_cls: Type[BaseSettings], filepath: str):
+        super().__init__(settings_cls)
+        self.filepath = filepath
+
+    def get_field_value(self, field, field_name):
+        return None, field_name, False
+
+    def __call__(self) -> Dict[str, Any]:
+        try:
+            with open(self.filepath, "r") as f:
+                data = yaml.safe_load(f)
+            return data if isinstance(data, dict) else {}
+        except FileNotFoundError:
+            return {}
+
+
 class SimulationSettings(BaseModel):
     """Settings related to market simulation and execution constraints."""
 
@@ -92,6 +113,53 @@ class RLSettings(BaseModel):
         return v
 
 
+class OptimizationSettings(BaseModel):
+    """Settings defining the search space for hyperparameter optimization."""
+
+    study_name: Annotated[
+        str,
+        Field(
+            description="Name of the Optuna study. Change this to start a new experiment."
+        ),
+    ] = "rl_order_execution_v1"
+
+    lr_min: Annotated[float, Field(description="Minimum learning rate to test.")] = 1e-5
+    lr_max: Annotated[float, Field(description="Maximum learning rate to test.")] = 1e-2
+
+    batch_sizes: Annotated[
+        List[int], Field(description="List of batch sizes to test.")
+    ] = [32, 64, 128]
+
+    gamma_min: Annotated[float, Field(description="Minimum discount factor.")] = 0.90
+    gamma_max: Annotated[float, Field(description="Maximum discount factor.")] = 0.9999
+
+    n_trials: Annotated[int, Field(description="Number of Optuna trials to run.")] = 20
+    tuning_episodes: Annotated[
+        int, Field(description="Episodes per trial (shorter than production run).")
+    ] = 500
+
+    @field_validator("lr_min", "lr_max", "n_trials", "tuning_episodes")
+    @classmethod
+    def must_be_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("Must be positive")
+        return v
+
+    @field_validator("gamma_min", "gamma_max")
+    @classmethod
+    def must_be_between_zero_and_one(cls, v: float) -> float:
+        if not (0 <= v <= 1):
+            raise ValueError("Must be between 0 and 1")
+        return v
+
+    @field_validator("batch_sizes")
+    @classmethod
+    def must_contain_positive_integers(cls, v: List[int]) -> List[int]:
+        if not all(i > 0 for i in v):
+            raise ValueError("Batch sizes must be positive integers")
+        return v
+
+
 class LoggingSettings(BaseModel):
     """Settings for application logging."""
 
@@ -126,6 +194,9 @@ class Settings(BaseSettings):
 
     simulation: SimulationSettings = Field(default_factory=lambda: SimulationSettings())
     rl: RLSettings = Field(default_factory=lambda: RLSettings())
+    optimization: OptimizationSettings = Field(
+        default_factory=lambda: OptimizationSettings()
+    )
     logging: LoggingSettings = Field(default_factory=lambda: LoggingSettings())
 
     @classmethod
@@ -139,8 +210,8 @@ class Settings(BaseSettings):
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         return (
             init_settings,
-            env_settings,
-            YamlConfigSettingsSource(settings_cls),
+            YamlFileSource(settings_cls, "config/best_params.yaml"),
+            YamlFileSource(settings_cls, "config/config.yaml"),
             dotenv_settings,
             file_secret_settings,
         )
