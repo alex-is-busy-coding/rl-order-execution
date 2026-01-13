@@ -1,10 +1,14 @@
-.PHONY: all run tensorboard test lint format type-check check clean help install install-dev docker-build docker-run docs
+.PHONY: all run optimize tensorboard test lint format type-check check clean help install install-dev docker-build docker-run docs
 
 all: run
 
 run:
 	@echo "Running RL Order Execution..."
 	uv run python main.py
+
+optimize:
+	@echo "Running Optuna Hyperparameter Tuning..."
+	uv run python src/rl_order_execution/optimize.py
 
 tensorboard:
 	@echo "Launching TensorBoard (http://localhost:6006)..."
@@ -68,6 +72,7 @@ docs:
 help:
 	@echo "Available commands:"
 	@echo "  make run          - Run the simulation"
+	@echo "  make optimize     - Run Optuna hyperparameter tuning"
 	@echo "  make tensorboard  - Launch TensorBoard server"
 	@echo "  make check        - Run all quality checks (lint + type-check + test)"
 	@echo "  make test         - Run unit tests"
