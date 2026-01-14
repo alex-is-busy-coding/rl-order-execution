@@ -99,6 +99,19 @@ rl-order-execution/
 └── main.py                  # Application entry point
 ```
 
+## Key Metrics Explained
+
+The simulation output provides several metrics to assess agent performance against the TWAP benchmark:
+
+| Metric | Interpretation | Implementation |
+| ------ | -------------- | -------------- |
+| Shortfall (IS) | `(Arrival Price * Shares) - Realized Revenue` | The total cost of trading (slippage + missed opportunity). Lower is better.
+| Avg Savings | `Avg(TWAP IS) - Avg(Agent IS)` | The average dollar amount saved per episode by using the RL agent. Positive is good.
+| Avg Savings (bps) | `(Avg Savings / Order Value) * 10,000` | Savings normalized by trade size. 1 bps = 0.01%. Standard industry metric for execution quality.
+| Information Ratio (IR) | `Mean(Savings) / StdDev(Savings)` | Measures risk-adjusted performance. High IR (>0.5) implies consistent outperformance, not just luck.
+| Win Rate | `% of episodes where Agent Cost < TWAP Cost` | Consistency of beating the benchmark. Ideally > 50%.
+| VaR 95% (Savings) | `5th Percentile of Savings Distribution` | Tail risk. If negative, it means in the worst 5% of cases, the agent underperforms TWAP by this amount.
+
 ## Development Workflow
 
 We use `make` to standardize development tasks and ensure code quality. 
