@@ -13,6 +13,7 @@ dependencies = [
     "PyYAML>=6.0.3",
     "tensorboard>=2.20.0",
     "optuna>=4.6.0",
+    "seaborn>=0.13.2",
 ]
 
 [dependency-groups]
