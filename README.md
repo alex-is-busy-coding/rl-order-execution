@@ -147,6 +147,20 @@ Configuration is managed via `pydantic-settings`. You can override defaults usin
 | :--- | :---: | :--- | :--- |
 | `RL_LOGGING__LOG_LEVEL` | No | `INFO` | Logging verbosity level.<br><br>**Possible values:**<br>`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` |
 
+### `optimization` settings
+
+
+| Name | Required | Default | Description |
+| :--- | :---: | :--- | :--- |
+| `RL_OPTIMIZATION__BATCH_SIZES` | No | `[32, 64, 128]` | List of batch sizes to test. |
+| `RL_OPTIMIZATION__GAMMA_MAX` | No | `0.9999` | Maximum discount factor. |
+| `RL_OPTIMIZATION__GAMMA_MIN` | No | `0.9` | Minimum discount factor. |
+| `RL_OPTIMIZATION__LR_MAX` | No | `0.01` | Maximum learning rate to test. |
+| `RL_OPTIMIZATION__LR_MIN` | No | `1e-05` | Minimum learning rate to test. |
+| `RL_OPTIMIZATION__N_TRIALS` | No | `20` | Number of Optuna trials to run. |
+| `RL_OPTIMIZATION__STUDY_NAME` | No | `rl_order_execution_v1` | Name of the Optuna study. Change this to start a new experiment. |
+| `RL_OPTIMIZATION__TUNING_EPISODES` | No | `500` | Episodes per trial (shorter than production run). |
+
 ### `rl` settings
 
 
