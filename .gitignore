@@ -22,9 +22,9 @@ venv/
 .idea/
 
 # Project Specific Outputs (Generated plots and logs)
-execution_analysis.png
 *.log
 runs/
+output/
 
 # Database
 db/
