@@ -36,10 +36,10 @@ graph LR
         TargetNet["Target Network"]
     end
 
-    PriceProcess -->|State: (Time, Inventory, Price)| Trader
-    Trader -->|Action: Sell k% of TWAP rate| ImpactModel
-    ImpactModel -->|Reward: -Slippage - Risk| Trader
-    ImpactModel -->|Execution Price| PriceProcess
+    PriceProcess -- "State: (Time, Inventory, Price)" --> Trader
+    Trader -- "Action: Sell k% of TWAP rate" --> ImpactModel
+    ImpactModel -- "Reward: -Slippage - Risk" --> Trader
+    ImpactModel -- "Execution Price" --> PriceProcess
 ```
 
 1. **State Observation:** The agent observes normalized time remaining ($t/T$), inventory remaining ($q/Q$), and recent price returns.
