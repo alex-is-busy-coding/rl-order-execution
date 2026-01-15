@@ -1,6 +1,33 @@
 # Deep Reinforcement Learning for Order Execution
 
-This project implements a Deep Q-Network (DQN) agent designed to execute large financial trade orders optimally. The agent learns to balance the trade-off between **market impact** (slippage caused by trading too fast) and **market risk** (price volatility risk from holding inventory too long).
+This project implements a Deep Q-Network (DQN) agent designed to execute large financial trade orders optimally. The agent learns to balance the trade-off between **market impact** (slippage caused by trading too fast) and **market risk** (price volatility risk from holding inventory too long), targeting a superior **Implementation Shortfall (IS)** compared to standard TWAP strategies.
+
+
+
+## Project Structure
+
+```
+rl-order-execution/
+├── .github/workflows/
+│   ├── ci.yml               # CI pipeline (Lint, Test, Type-Check)
+│   └── update-docs.yml      # Auto-update README config table
+├── config/
+│   └── config.yaml          # Runtime configuration parameters
+├── src/
+│   └── rl_order_execution/
+│       ├── agent.py         # DQN Agent & ReplayBuffer implementation
+│       ├── settings.py      # Pydantic configuration & validation
+│       ├── environment.py   # Custom Gymnasium Market Environment
+│       ├── evaluation.py    # TWAP comparison & plotting logic
+│       ├── optimize.py      # Optuna hyperparameter tuning script
+│       └── training.py      # Core training loop with TensorBoard
+├── tests/                   # Pytest suite
+├── Dockerfile               # Container definition
+├── Makefile                 # Automation commands
+├── pyproject.toml           # Dependencies (uv)
+├── README.md                # Documentation
+└── main.py                  # Application entry point
+```
 
 ## Getting Started
 
@@ -79,31 +106,6 @@ To run the simulation in a completely isolated environment:
     ```bash
     make docker-run
     ```
-
-## Project Structure
-
-```
-rl-order-execution/
-├── .github/workflows/
-│   ├── ci.yml               # CI pipeline (Lint, Test, Type-Check)
-│   └── update-docs.yml      # Auto-update README config table
-├── config/
-│   └── config.yaml          # Runtime configuration parameters
-├── src/
-│   └── rl_order_execution/
-│       ├── agent.py         # DQN Agent & ReplayBuffer implementation
-│       ├── settings.py      # Pydantic configuration & validation
-│       ├── environment.py   # Custom Gymnasium Market Environment
-│       ├── evaluation.py    # TWAP comparison & plotting logic
-│       ├── optimize.py      # Optuna hyperparameter tuning script
-│       └── training.py      # Core training loop with TensorBoard
-├── tests/                   # Pytest suite
-├── Dockerfile               # Container definition
-├── Makefile                 # Automation commands
-├── pyproject.toml           # Dependencies (uv)
-├── README.md                # Documentation
-└── main.py                  # Application entry point
-```
 
 ## Key Metrics Explained
 
@@ -204,9 +206,25 @@ While this project demonstrates a robust RL pipeline, it makes certain simplifyi
 
 ### 1. Discrete vs. Continuous Control (DQN vs. PPO/SAC)
 
-**Limitation:** The current agent uses a Deep Q-Network (DQN), which necessitates a discrete action space. Execution rates are quantized into specific bins (e.g., 0.5x, 1.0x, 2.0x TWAP).
+**Limitation:** The current agent uses a Deep Q-Network (DQN), which necessitates a discrete action space. Execution rates are quantized into specific bins (e.g., 0.5x, 1.0x, 2.0x TWAP). This lacks the granularity required for precise optimal control.
 
-**Future Improvement:** Implement Proximal Policy Optimization (PPO) or Soft Actor-Critic (SAC). These algorithms support continuous action spaces, allowing the agent to output precise execution rates without artificial quantization buckets.
+**Future Improvement:** Implement **Proximal Policy Optimization (PPO)** or **Soft Actor-Critic (SAC)**. These algorithms natively support continuous action spaces, allowing the agent to output precise float values for execution rates.
+
+### 2. Market Simulation Realism (GBM vs. Stylized Facts)
+
+**Limitation:** The environment utilizes Geometric Brownian Motion (GBM). While standard for theoretical derivatives pricing, GBM fails to capture the "stylized facts" of high-frequency market data, specifically **Volatility Clustering**, **Fat Tails**, and **Mean Reversion**.
+
+**Future Improvement:**
+
+- Implement an **Ornstein-Uhlenbeck (OU)** process to simulate mean-reverting price dynamics.
+
+- Develop a `HistoricalReplayEnv` to train agents on real minute-bar or tick-level data (L2/L3) to validate performance on historical scenarios.
+
+### 3. State Space Complexity
+
+**Limitation:** The current state observation includes only normalized time, inventory, and recent price trend.
+
+Future Improvement: Enrich the state space with microstructure signals such as **Order Book Imbalance (OBI)**, **Volume Weighted Average Price (VWAP) deviation**, and **Bid-Ask Spread** to give the agent deeper market visibility.
 
 ## License
 
