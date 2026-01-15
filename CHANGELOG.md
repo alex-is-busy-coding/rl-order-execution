@@ -1,6 +1,12 @@
 # Changelog
 
 
+- 2026-01-15 - Merge branch 'main' of github.com:alex-is-busy-coding/rl-order-execution ([019d181](019d1816be6b61ffbbe07d7f0c8c9d132be91d68))
+
+- 2026-01-15 - Chore: *(docs)* Update changelog ([286af33](286af338a7527dd93628df8485b72e40265e6479))
+
+- 2026-01-15 - Docs: *(readme)* Add system architecture and mathematical model ([593562e](593562e84c2edad8532e82f1a56b515eb13bdec9))
+
 - 2026-01-15 - Merge branch 'main' of github.com:alex-is-busy-coding/rl-order-execution ([c6bf5cc](c6bf5cc9fbe14b0acf39f3ee9517e879d1350a66))
 
 - 2026-01-15 - Chore: *(docs)* Update changelog ([9eab608](9eab6085cec4f911ae239d483ad504cfbeb764fd))
