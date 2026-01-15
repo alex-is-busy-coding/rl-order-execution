@@ -22,7 +22,11 @@ rl-order-execution/
 │       ├── optimize.py      # Optuna hyperparameter tuning script
 │       └── training.py      # Core training loop with TensorBoard
 ├── tests/                   # Pytest suite
+├── output/                  # Generated artifacts
+├── db/                      # Optuna SQLite database storage
+├── .pre-commit-config.yaml  # Git hooks configuration
 ├── Dockerfile               # Container definition
+├── LICENSE                  # MIT License
 ├── Makefile                 # Automation commands
 ├── pyproject.toml           # Dependencies (uv)
 ├── README.md                # Documentation
