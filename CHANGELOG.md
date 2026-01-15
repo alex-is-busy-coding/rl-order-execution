@@ -1,6 +1,12 @@
 # Changelog
 
 
+- 2026-01-15 - Merge branch 'main' of github.com:alex-is-busy-coding/rl-order-execution ([214d63d](214d63d029732037edf1dca9e95bf20f7211a07a))
+
+- 2026-01-15 - Chore: *(docs)* Update changelog ([6da91af](6da91af503f7ad4e48fe7789d1eed2d17a7f65bc))
+
+- 2026-01-15 - Docs: *(readme)* Update mermaid diagram label syntax ([b82094e](b82094ec1d91c33fbd7e42a67b5967284c8d634a))
+
 - 2026-01-15 - Merge branch 'main' of github.com:alex-is-busy-coding/rl-order-execution ([019d181](019d1816be6b61ffbbe07d7f0c8c9d132be91d68))
 
 - 2026-01-15 - Chore: *(docs)* Update changelog ([286af33](286af338a7527dd93628df8485b72e40265e6479))
