@@ -17,6 +17,12 @@ This project implements a Deep Q-Network (DQN) agent designed to execute large f
     ```bash
     git clone https://github.com/alex-is-busy-coding/rl-order-execution.git
     cd rl-order-execution
+
+    # Install dependencies (production + dev)
+    make install-dev
+
+    # Set up Git pre-commit hooks (Optional, but recommended)
+    make setup-hooks
     ```
 
 - **Install dependencies and run:**
