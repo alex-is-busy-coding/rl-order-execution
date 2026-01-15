@@ -2,15 +2,14 @@
 
 This project implements a Deep Q-Network (DQN) agent designed to execute large financial trade orders optimally. The agent learns to balance the trade-off between **market impact** (slippage caused by trading too fast) and **market risk** (price volatility risk from holding inventory too long), targeting a superior **Implementation Shortfall (IS)** compared to standard TWAP strategies.
 
-
-
 ## Project Structure
 
 ```
 rl-order-execution/
 ├── .github/workflows/
-│   ├── ci.yml               # CI pipeline (Lint, Test, Type-Check)
-│   └── update-docs.yml      # Auto-update README config table
+│   ├── changelog.yaml        # Auto-generate CHANGELOG.md
+│   ├── ci.yaml               # CI pipeline (Lint, Test, Type-Check)
+│   └── update-docs.yaml      # Auto-update README config table
 ├── config/
 │   └── config.yaml          # Runtime configuration parameters
 ├── src/
@@ -25,6 +24,7 @@ rl-order-execution/
 ├── output/                  # Generated artifacts
 ├── db/                      # Optuna SQLite database storage
 ├── .pre-commit-config.yaml  # Git hooks configuration
+├── cliff.toml               # Changelog configuration
 ├── Dockerfile               # Container definition
 ├── LICENSE                  # MIT License
 ├── Makefile                 # Automation commands
