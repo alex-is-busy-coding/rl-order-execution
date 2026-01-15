@@ -54,6 +54,8 @@ All notable changes to this project will be documented in this file.
 
 ### Miscellaneous Tasks
 
+- *(docs)* Update changelog
+- *(changelog)* Bump checkout to v6
 - *(changelog)* Bump git-cliff-action to v4
 - *(changelog)* Add workflow to auto-generate changelog
 - *(changelog)* Add git-cliff configuration
