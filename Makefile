@@ -1,4 +1,4 @@
-.PHONY: all run optimize tensorboard test lint format type-check check clean help install install-dev docker-build docker-run docs
+.PHONY: all run optimize tensorboard test lint format type-check check clean help install install-dev setup-hooks docker-build docker-run docs
 
 all: run
 
@@ -42,12 +42,9 @@ install-dev:
 	@echo "Syncing dev dependencies..."
 	uv sync --all-extras --dev
 
-clean:
-	@echo "Cleaning up..."
-	rm -rf .venv
-	rm -rf __pycache__
-	rm -f execution_analysis.png
-	rm -rf runs
+setup-hooks:
+	@echo "Installing pre-commit git hooks..."
+	uv run pre-commit install
 
 docker-build:
 	@echo "Building Docker image..."
@@ -68,6 +65,13 @@ docs:
 		--update README.md \
 		--heading-offset 2
 	@echo "README.md updated."
+
+clean:
+	@echo "Cleaning up..."
+	rm -rf .venv
+	rm -rf __pycache__
+	rm -f execution_analysis.png
+	rm -rf runs
 
 help:
 	@echo "Available commands:"
