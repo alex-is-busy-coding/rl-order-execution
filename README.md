@@ -2,6 +2,88 @@
 
 This project implements a Deep Q-Network (DQN) agent designed to execute large financial trade orders optimally. The agent learns to balance the trade-off between **market impact** (slippage caused by trading too fast) and **market risk** (price volatility risk from holding inventory too long), targeting a superior **Implementation Shortfall (IS)** compared to standard TWAP strategies.
 
+## Approach & Logic
+
+### The Problem: Optimal Execution
+
+A trader needs to sell a large block of shares (e.g., 10,000) within a fixed time window (e.g., 1 hour).
+
+- **Selling too fast** (dumping) crashes the price due to temporary market impact (liquidity consumption).
+
+- **Selling too slow** exposes the portfolio to price volatility risk; the price might drift down naturally before the trade completes.
+
+### The Solution: Adaptive Control
+
+Standard algorithms like **TWAP** (Time-Weighted Average Price) sell at a constant rate, ignoring market conditions. Our **RL Agent** is adaptive:
+
+- If the price is **rising**, it may accelerate selling to lock in favorable prices ("front-loading").
+
+- If the price is **falling** (but not crashing), it may slow down to wait for mean reversion, provided enough time remains.
+
+## System Architecture
+
+The system models the interaction between an **Execution Agent** (Trader) and a **Simulated Market**.
+
+```mermaid
+graph LR
+    subgraph Market ["Market Environment (Gym)"]
+        PriceProcess["Price Process (GBM)"]
+        ImpactModel["Impact Model (Almgren-Chriss)"]
+    end
+
+    subgraph Trader ["RL Agent (Double DQN)"]
+        PolicyNet["Policy Network"]
+        TargetNet["Target Network"]
+    end
+
+    PriceProcess -->|State: (Time, Inventory, Price)| Trader
+    Trader -->|Action: Sell k% of TWAP rate| ImpactModel
+    ImpactModel -->|Reward: -Slippage - Risk| Trader
+    ImpactModel -->|Execution Price| PriceProcess
+```
+
+1. **State Observation:** The agent observes normalized time remaining ($t/T$), inventory remaining ($q/Q$), and recent price returns.
+
+2. **Action Selection:** The agent selects a discrete execution speed (e.g., $0.5\times$, $1.0\times$, $2.0\times$ the baseline TWAP rate).
+
+3. **Market Response:** The environment calculates the execution price (penalized by impact) and evolves the "fair" mid-price for the next step.
+
+## Mathematical Model
+
+### 1. Market Dynamics (Asset Price)
+
+The "fair" mid-price $P_t$ evolves according to **Geometric Brownian Motion (GBM)**, consistent with the Black-Scholes assumption for short time horizons:
+
+$$ dP_t = \mu P_t dt + \sigma P_t dW_t $$
+
+- $\mu$ (Drift): Assumed to be 0 (random walk).
+
+- $\sigma$ (Volatility): Controls the "risk" component. Higher volatility forces the agent to sell faster to avoid uncertainty.
+
+### 2. Transaction Cost (Slippage)
+
+We follow the **Almgren-Chriss** model logic where trading creates a temporary distortion in price. If we sell $n_t$ shares at time $t$:
+
+$$ \tilde{P}t = P_t - \underbrace{\beta \cdot n_t}_{\text{Temporary Impact}} $$
+
+- $\beta$: The liquidity coefficient.
+
+- **Consequence:** The cost of trading is proportional to $n_t^2$. This quadratic cost creates a strong mathematical incentive to split orders into smaller chunks (the foundation of TWAP).
+
+### 3. Reward Function
+
+To train the RL agent, we define a reward $r_t$ that aligns with minimizing Implementation Shortfall (IS):
+
+$$ r_t = \underbrace{(n_t \times \tilde{P}t)}_{\text{Revenue}} - \underbrace{\lambda \frac{q_t^2}{Q}}_{\text{Inventory Penalty}} $$
+
+This is equivalent to minimizing the cost function:
+
+$$ \text{Cost} \approx \sum (\text{Slippage}_t + \text{Risk}_t) $$
+
+- **Slippage Term:** Penalizes trading too fast.
+
+- **Risk Term ($\lambda$):** Penalizes holding inventory too long. If $\lambda=0$, the agent approaches TWAP. If $\lambda$ is high, the agent sells ASAP.
+
 ## Project Structure
 
 ```
@@ -24,6 +106,7 @@ rl-order-execution/
 ├── output/                  # Generated artifacts
 ├── db/                      # Optuna SQLite database storage
 ├── .pre-commit-config.yaml  # Git hooks configuration
+├── CHANGELOG.md         # Auto-generated changelog history
 ├── cliff.toml               # Changelog configuration
 ├── Dockerfile               # Container definition
 ├── LICENSE                  # MIT License
@@ -229,6 +312,10 @@ While this project demonstrates a robust RL pipeline, it makes certain simplifyi
 **Limitation:** The current state observation includes only normalized time, inventory, and recent price trend.
 
 Future Improvement: Enrich the state space with microstructure signals such as **Order Book Imbalance (OBI)**, **Volume Weighted Average Price (VWAP) deviation**, and **Bid-Ask Spread** to give the agent deeper market visibility.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a history of changes to this project.
 
 ## License
 
