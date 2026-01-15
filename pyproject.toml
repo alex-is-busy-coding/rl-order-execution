@@ -19,6 +19,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy>=1.19.1",
+    "pre-commit>=4.5.1",
     "pytest>=9.0.2",
     "ruff>=0.14.11",
     "settings-doc>=4.3.2",
