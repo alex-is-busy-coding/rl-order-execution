@@ -1,0 +1,16 @@
+repos:
+  - repo: local
+    hooks:
+      - id: make-lint
+        name: Lint (Ruff)
+        entry: make lint
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: make-type-check
+        name: Type Check (MyPy)
+        entry: make type-check
+        language: system
+        types: [python]
+        pass_filenames: false
